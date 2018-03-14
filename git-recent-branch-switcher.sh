@@ -10,7 +10,7 @@ ec="`echo -e '\033'`"   # escape
 enter="`echo -e '\n'`"   # newline
 
 
-function grb {
+function git-recent-branch-switcher {
     num_results=20
     if [ "$1" ]; then
         num_results=$1
@@ -72,12 +72,11 @@ function menu {
         for i in `seq 0 $(($num_options - 1))`
         do
 
-              echo -n "$normal_color"
+            echo -n "$normal_color"
             if [[ $current_pos == $i ]]; then
                 echo -n "$highlight_color"
             fi
-
-          eval "echo ${options[i]}"
+			eval "echo ${options[i]}"
         done
 
         read -sn 1 key
@@ -115,7 +114,7 @@ function menu {
 
     } >&2 # end capture
 
-    eval "echo ${options[current_pos]}"
+    echo "${options[current_pos]}"
 }
 
-
+git-recent-branch-switcher
