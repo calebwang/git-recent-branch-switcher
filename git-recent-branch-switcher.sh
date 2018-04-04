@@ -117,4 +117,4 @@ function menu {
     echo "${options[current_pos]}"
 }
 
-git-recent-branch-switcher
+git-recent-branch-switcher $@
