@@ -16,7 +16,7 @@ function git-recent-branch-switcher {
         num_results=$1
     fi
 
-    result=$(git for-each-ref --count="$num_results" --sort=-authordate:iso8601 refs/heads/ --format='%(color:yellow)%(HEAD) %(refname:short)')
+    result=$(git for-each-ref --color --count="$num_results" --sort=-authordate:iso8601 refs/heads/ --format='%(color:yellow)%(HEAD) %(refname:short)')
 
     branch=$(menu "$result")
     branch=$(extract_branch "$branch")
@@ -76,7 +76,7 @@ function menu {
             if [[ $current_pos == $i ]]; then
                 echo -n "$highlight_color"
             fi
-			eval "echo ${options[i]}"
+	        eval "echo ${options[i]}"
         done
 
         read -sn 1 key
