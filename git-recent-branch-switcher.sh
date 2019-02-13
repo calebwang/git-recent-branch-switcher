@@ -6,7 +6,7 @@ highlight_color="`echo -e '\r\033[1;7m'`" # reverse
 # keys
 up_arrow="`echo -e '\033[A'`" # arrow up
 down_arrow="`echo -e '\033[B'`" # arrow down
-ec="`echo -e '\033'`"   # escape
+esc="`echo -e '\033'`"   # escape
 enter="`echo -e '\n'`"   # newline
 
 function git-recent-branch-switcher {
@@ -88,23 +88,17 @@ function menu {
         done
 
         read -sn 1 key
-        if [[ "$key" == "$ec" ]]; then
+        if [[ "$key" == "$esc" ]]; then
            read -sn 2 k2
            key="$key$k2"
         fi
 
         case "$key" in
-           "$up_arrow")
-                go_up
-                ;;
-           "k")
+           "$up_arrow"|k)
                 go_up
                 ;;
 
-           "$down_arrow")
-                go_down
-                ;;
-           "j")
+           "$down_arrow"|j)
                 go_down
                 ;;
 
