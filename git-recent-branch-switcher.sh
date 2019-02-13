@@ -9,16 +9,6 @@ down_arrow="`echo -e '\033[B'`" # arrow down
 ec="`echo -e '\033'`"   # escape
 enter="`echo -e '\n'`"   # newline
 
-trap ctrl_c INT
-
-function ctrl_c() {
-    tput cud "$num_results"
-    tput cnorm # unhide cursor
-    echo "$normal_color" # normal colors
-}
-
-
-
 function git-recent-branch-switcher {
     num_results=20
     if [ "$1" ]; then
@@ -39,10 +29,6 @@ function extract_branch {
     echo "$1" | egrep -o " [a-zA-Z0-9-]+" | cut -c 2-
 }
 
-function ctrl_c() {
-    tput cnorm
-    exit
-}
 
 # thanks for https://bbs.archlinux.org/viewtopic.php?id=105732 for providing a baseline
 function menu {
@@ -53,6 +39,14 @@ function menu {
     { # capture stdout to stderr
 
     tput civis # hide cursor
+
+    function ctrl_c() {
+        tput cnorm
+        # For some reason this is the right number of lines to move up
+        tput cuu 2
+        echo "$normal_color" # normal colors
+        exit
+    }
 
     trap ctrl_c INT
 
