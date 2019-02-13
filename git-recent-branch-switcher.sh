@@ -9,6 +9,15 @@ down_arrow="`echo -e '\033[B'`" # arrow down
 ec="`echo -e '\033'`"   # escape
 enter="`echo -e '\n'`"   # newline
 
+trap ctrl_c INT
+
+function ctrl_c() {
+	tput cud "$num_results"
+	tput cnorm # unhide cursor
+	echo "$normal_color" # normal colors
+}
+
+
 
 function git-recent-branch-switcher {
     num_results=20
@@ -30,6 +39,11 @@ function extract_branch {
     echo "$1" | egrep -o " [a-zA-Z0-9-]+" | cut -c 2-
 }
 
+function ctrl_c() {
+	tput cnorm
+	exit
+}
+
 # thanks for https://bbs.archlinux.org/viewtopic.php?id=105732 for providing a baseline
 function menu {
     IFS=$'\n' read -ra options -d '' <<< "$1"
@@ -39,6 +53,8 @@ function menu {
     { # capture stdout to stderr
 
     tput civis # hide cursor
+
+	trap ctrl_c INT
 
     current_pos=0 # current position
 
@@ -76,7 +92,7 @@ function menu {
             if [[ $current_pos == $i ]]; then
                 echo -n "$highlight_color"
             fi
-	        eval "echo ${options[i]}"
+            eval "echo ${options[i]}"
         done
 
         read -sn 1 key
