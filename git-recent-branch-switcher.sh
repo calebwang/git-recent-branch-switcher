@@ -29,7 +29,6 @@ function extract_branch {
     echo "$1" | egrep -o " [a-zA-Z0-9-]+" | cut -c 2-
 }
 
-
 # thanks for https://bbs.archlinux.org/viewtopic.php?id=105732 for providing a baseline
 function menu {
     IFS=$'\n' read -ra options -d '' <<< "$1"
@@ -42,9 +41,8 @@ function menu {
 
     function ctrl_c() {
         tput cnorm
-        # For some reason this is the right number of lines to move up
-        tput cuu 2
-        echo "$normal_color" # normal colors
+        tput cuu 1
+        echo -n "$normal_color" # normal colors
         exit
     }
 
@@ -118,9 +116,9 @@ function menu {
 
     done
 
-    tput cud $(( num_options - 1 ))
+    tput cud $(( num_options ))
     tput cnorm # unhide cursor
-    echo "$normal_color" # normal colors
+    echo -n "$normal_color" # normal colors
 
     } >&2 # end capture
 
