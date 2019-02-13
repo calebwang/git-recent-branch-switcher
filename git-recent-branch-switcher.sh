@@ -12,9 +12,9 @@ enter="`echo -e '\n'`"   # newline
 trap ctrl_c INT
 
 function ctrl_c() {
-	tput cud "$num_results"
-	tput cnorm # unhide cursor
-	echo "$normal_color" # normal colors
+    tput cud "$num_results"
+    tput cnorm # unhide cursor
+    echo "$normal_color" # normal colors
 }
 
 
@@ -40,8 +40,8 @@ function extract_branch {
 }
 
 function ctrl_c() {
-	tput cnorm
-	exit
+    tput cnorm
+    exit
 }
 
 # thanks for https://bbs.archlinux.org/viewtopic.php?id=105732 for providing a baseline
@@ -54,7 +54,7 @@ function menu {
 
     tput civis # hide cursor
 
-	trap ctrl_c INT
+    trap ctrl_c INT
 
     current_pos=0 # current position
 
