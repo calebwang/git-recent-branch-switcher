@@ -70,16 +70,20 @@ function menu {
         fi
     }
 
+    jump_to_line() {
+        current_pos=$1
+    }
+
     function handle_digit_input() {
         next_digit=$1
         number_input+=$next_digit
         if [[ $number_input -ge 1 && $number_input -le $num_options ]]; then
             # jump to position if input is valid
-            current_pos=$(($number_input-1))
+            jump_to_line $(($number_input-1))
         else
             # otherwise, reset input and jump to position
             number_input=$next_digit
-            current_pos=$(($number_input-1))
+            jump_to_line $(($number_input-1))
         fi
     }
 
@@ -109,23 +113,36 @@ function menu {
 
         read -sn 1 key
         if [[ "$key" == "$esc" ]]; then
-           read -sn 2 k2
-           key="$key$k2"
+            read -sn 2 k2
+            key="$key$k2"
+        elif [[ $key == "g" ]]; then
+            read -sn 1 k2
+            key="$key$k2"
         fi
 
         case "$key" in
-           "$up_arrow"|k)
+            "$up_arrow"|k)
                 go_up
                 ;;
 
-           "$down_arrow"|j)
+            "$down_arrow"|j)
                 go_down
                 ;;
 
-           [0-9])
-                handle_digit_input $key;;
+            [0-9])
+                handle_digit_input $key
+                ;;
 
-           "$enter")
+            gg)
+                jump_to_line 0
+                ;;
+
+            G)
+                jump_to_line $(($num_options-1))
+                ;;
+
+
+            "$enter")
                 end=true;;
 
        esac
