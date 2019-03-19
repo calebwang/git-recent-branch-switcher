@@ -108,7 +108,7 @@ function menu {
                 echo -n "$highlight_color"
             fi
             lineno=$(($i + 1))
-            printf "%-2s ${options[i]}\n" $lineno
+            printf "%2s ${options[i]}\n" $lineno
         done
 
         read -sn 1 key
