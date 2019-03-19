@@ -51,7 +51,11 @@ function menu {
 
     current_pos=0 # current position
 
+    # instantiate state about what digits have been keyed in
+    number_input=""
+
     function go_up() {
+      number_input="" # clear lineno input
       current_pos=$(( current_pos - 1 ))
       if [[ $current_pos == -1 ]]; then
           current_pos=$(( $num_options - 1))
@@ -59,10 +63,24 @@ function menu {
     }
 
     function go_down() {
+        number_input="" # clear lineno input
         current_pos=$(( current_pos + 1 ))
         if [[ $current_pos == $(( num_options )) ]]; then
                current_pos=0
-          fi
+        fi
+    }
+
+    function handle_digit_input() {
+        next_digit=$1
+        number_input+=$next_digit
+        if [[ $number_input -ge 1 && $number_input -le $num_options ]]; then
+            # jump to position if input is valid
+            current_pos=$(($number_input-1))
+        else
+            # otherwise, reset input and jump to position
+            number_input=$next_digit
+            current_pos=$(($number_input-1))
+        fi
     }
 
     # figure out starting index
@@ -104,8 +122,12 @@ function menu {
                 go_down
                 ;;
 
+           [0-9])
+                handle_digit_input $key;;
+
            "$enter")
                 end=true;;
+
        esac
 
        tput cuu $num_options
