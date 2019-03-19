@@ -6,4 +6,6 @@ Basic Usage:
 
 `k` — navigate up in list of branches
 
+`[0-9]+` — jump to line number; resets on overflow
+
 `Enter` — select branch to switch to
