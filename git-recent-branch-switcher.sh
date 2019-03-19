@@ -38,6 +38,7 @@ function menu {
     { # capture stdout to stderr
 
     tput civis # hide cursor
+    stty -echo
 
     function ctrl_c() {
         tput cnorm
@@ -84,7 +85,8 @@ function menu {
             if [[ $current_pos == $i ]]; then
                 echo -n "$highlight_color"
             fi
-            eval "echo ${options[i]}"
+            lineno=$(($i + 1))
+            printf "%-2s ${options[i]}\n" $lineno
         done
 
         read -sn 1 key
@@ -110,6 +112,7 @@ function menu {
 
     done
 
+    stty echo
     tput cud $(( num_options ))
     tput cnorm # unhide cursor
     echo -n "$normal_color" # normal colors
