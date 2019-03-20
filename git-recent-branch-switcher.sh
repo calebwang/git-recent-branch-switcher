@@ -50,10 +50,18 @@ function menu {
 
     trap ctrl_c INT
 
-    current_pos=0 # current position
+    # figure out starting index
+    initial_position=0
+    i=0
+    for i in "${!options[@]}"; do
+        if [[ ${options[i]} == *'*'* ]]; then
+            initial_position=$i
+        fi
+    done
 
-    # instantiate state about what digits have been keyed in
+    # instantiate input state and starting position
     number_input=""
+    current_pos=$initial_position
 
     function print_menu {
         for i in `seq 0 $(($num_options - 1))`
@@ -119,7 +127,7 @@ function menu {
             jump_to_line $(($number_input-1))
         else
             number_input=""
-            jump_to_line 0
+            jump_to_line $initial_position
         fi
     }
 
@@ -129,7 +137,7 @@ function menu {
             jump_to_line $(($number_input-1))
         else
             # reset position if input is cleared or overflows
-            jump_to_line 0
+            jump_to_line $initial_position
         fi
     }
 
@@ -172,14 +180,6 @@ function menu {
                 end=true;;
         esac
     }
-
-    # figure out starting index
-    i=0
-    for i in "${!options[@]}"; do
-        if [[ ${options[i]} == *'*'* ]]; then
-            current_pos=$i
-        fi
-    done
 
     end=false
 
