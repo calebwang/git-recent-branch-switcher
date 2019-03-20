@@ -4,6 +4,7 @@ normal_color="`echo -e '\r\033[0;0m'`" # normal
 highlight_color="`echo -e '\r\033[1;7m'`" # reverse
 
 # keys
+mac_backspace=$'\x7f'
 up_arrow="`echo -e '\033[A'`" # arrow up
 down_arrow="`echo -e '\033[B'`" # arrow down
 esc="`echo -e '\033'`"   # escape
@@ -54,52 +55,7 @@ function menu {
     # instantiate state about what digits have been keyed in
     number_input=""
 
-    function go_up() {
-      number_input="" # clear lineno input
-      current_pos=$(( current_pos - 1 ))
-      if [[ $current_pos == -1 ]]; then
-          current_pos=$(( $num_options - 1))
-      fi
-    }
-
-    function go_down() {
-        number_input="" # clear lineno input
-        current_pos=$(( current_pos + 1 ))
-        if [[ $current_pos == $(( num_options )) ]]; then
-               current_pos=0
-        fi
-    }
-
-    jump_to_line() {
-        current_pos=$1
-    }
-
-    function handle_digit_input() {
-        next_digit=$1
-        number_input+=$next_digit
-        if [[ $number_input -ge 1 && $number_input -le $num_options ]]; then
-            # jump to position if input is valid
-            jump_to_line $(($number_input-1))
-        else
-            # otherwise, reset input and jump to position
-            number_input=$next_digit
-            jump_to_line $(($number_input-1))
-        fi
-    }
-
-    # figure out starting index
-    i=0
-    for i in "${!options[@]}"; do
-        if [[ ${options[i]} == *'*'* ]]; then
-            current_pos=$i
-        fi
-    done
-
-    end=false
-
-    while ! $end
-    do
-
+    function print_menu {
         for i in `seq 0 $(($num_options - 1))`
         do
 
@@ -111,6 +67,73 @@ function menu {
             printf "%2s ${options[i]}\n" $lineno
         done
 
+    }
+
+    function print_toolbar {
+        if [[ $number_input ]]; then
+            printf ":%-10d" $number_input
+        else
+            printf "          "
+        fi
+    }
+
+    function go_up {
+      number_input="" # clear lineno input
+      current_pos=$(( current_pos - 1 ))
+      if [[ $current_pos == -1 ]]; then
+          current_pos=$(( $num_options - 1))
+      fi
+    }
+
+    function go_down {
+        number_input="" # clear lineno input
+        current_pos=$(( current_pos + 1 ))
+        if [[ $current_pos == $(( num_options )) ]]; then
+               current_pos=0
+        fi
+    }
+
+    function jump_to_line {
+        current_pos=$1
+    }
+
+    function handle_digit_input {
+        next_digit=$1
+
+        # Don't process leading 0s
+        if [[ -z "$number_input" && $next_digit -eq 0 ]]; then
+            return
+        fi
+
+        number_input+=$next_digit
+
+        # Append to the input and jump to the new position, if it is valid.
+        # If the input would overflow, reset the input and start over with the new digit,
+        # except if the next digit is 0, in which case just reset the input.
+        # This might cause weird behavior sometimes, but generally allows
+        # the user to quickly jump between positions without requiring more keystrokes.
+        if [[ $number_input -ge 1 && $number_input -le $num_options ]]; then
+            jump_to_line $(($number_input-1))
+        elif [[ $next_digit -ne 0 ]]; then
+            number_input=$next_digit
+            jump_to_line $(($number_input-1))
+        else
+            number_input=""
+            jump_to_line 0
+        fi
+    }
+
+    function handle_backspace {
+        number_input=${number_input%?}
+        if [[ $number_input -ge 1 && $number_input -le $num_options ]]; then
+            jump_to_line $(($number_input-1))
+        else
+            # reset position if input is cleared or overflows
+            jump_to_line 0
+        fi
+    }
+
+    function handle_input {
         read -sn 1 key
         if [[ "$key" == "$esc" ]]; then
             read -sn 2 k2
@@ -141,13 +164,33 @@ function menu {
                 jump_to_line $(($num_options-1))
                 ;;
 
+            "$mac_backspace")
+                handle_backspace
+                ;;
 
             "$enter")
                 end=true;;
+        esac
+    }
 
-       esac
+    # figure out starting index
+    i=0
+    for i in "${!options[@]}"; do
+        if [[ ${options[i]} == *'*'* ]]; then
+            current_pos=$i
+        fi
+    done
 
-       tput cuu $num_options
+    end=false
+
+    while ! $end
+    do
+        print_menu
+        print_toolbar
+
+        handle_input
+
+        tput cuu $num_options
 
     done
 
