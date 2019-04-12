@@ -27,7 +27,7 @@ function git-recent-branch-switcher {
 }
 
 function extract_branch {
-    echo "$1" | egrep -o " [a-zA-Z0-9-]+" | cut -c 2-
+    echo "$1" | egrep -o " [a-zA-Z0-9/-]+" | cut -c 2-
 }
 
 # thanks for https://bbs.archlinux.org/viewtopic.php?id=105732 for providing a baseline
