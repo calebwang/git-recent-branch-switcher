@@ -1,6 +1,8 @@
+![demo.png](demo.png)
+
 Basic Usage:
 
-`grb N` — list N most recent branches
+`grb [N]` — list N most recent branches (default: 20)
 
 `j` — navigate down in list of branches
 
